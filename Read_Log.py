@@ -28,7 +28,7 @@ try:
 except FileNotFoundError:
     #retrieves files and saves it locally
     local_file, headers = urlretrieve('https://s3.amazonaws.com/tcmg476/http_access_log', 'local_copy.log')
-    print("File retrieved")
+    print("Fetching file and adding it to data base")
 else:
     print("File exist")
 
@@ -41,19 +41,17 @@ print()
 
 #Request made in the last 6 months - apr 11 1995 to present
 within_6mths = 0
+count2 = 0
 for line in open("local_copy.log"):
     split_string = line.split()
-    if len(split_string) > 8:
+
+    if len(split_string) > 6 and (split_string[1] == split_string[2]):
         try:
-            #for item in split_string:
-                #print(item)
-            #print(split_string[6:9])
-            
 
             temp_string = split_string[3]
-            #print(temp_string[4:7])
+            
             temp_month_num = monthToNum(temp_string[4:7])
-            #print(temp_month_num)
+            
 
             #converted to ints becasue of random errors
             date_year = int(temp_string[8:12])
@@ -64,8 +62,40 @@ for line in open("local_copy.log"):
                 within_6mths += 1
         except:
             print(line)
-
-print (within_6mths)
+    elif len(split_string) > 5:
+        try:
             
+            temp_string = split_string[3]
+            
+            temp_month_num = monthToNum(temp_string[4:7])
+            
+
+            #converted to ints becasue of random errors
+            date_year = int(temp_string[8:12])
+            date_month = int(temp_month_num)
+            date_day = int(temp_string[1:3])
+            date_check = datetime.datetime(date_year, date_month, date_day)
+            if date_check<= date_6mth_ago_today:
+                within_6mths += 1
+        except:
+            try:
+            
+                temp_string = split_string[2]
+                
+                temp_month_num = monthToNum(temp_string[4:7])
+
+                #converted to ints becasue of random errors
+                date_year = int(temp_string[8:12])
+                date_month = int(temp_month_num)
+                date_day = int(temp_string[1:3])
+                date_check = datetime.datetime(date_year, date_month, date_day)
+                if date_check<= date_6mth_ago_today:
+                    within_6mths += 1
+            except:
+                pass
+
+
+print ("Within the past 6 months from today, 11/Oct/1955, there were ", (within_6mths), " request excluding a few extranious request with no dates")
+print ("")            
 
     
