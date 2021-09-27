@@ -1,5 +1,26 @@
 #From AMIKEAL on GITHUB https://gist.github.com/amikeal/4e2847e3977a787e071e81014fe43390
 from urllib.request import urlretrieve
+import datetime
+
+
+#converting the month abv to a number; from https://stackoverflow.com/questions/3418050/month-name-to-month-number-and-vice-versa-in-python
+def monthToNum(shortMonth):
+    return {
+            'Jan': 1,
+            'Feb': 2,
+            'Mar': 3,
+            'Apr': 4,
+            'May': 5,
+            'Jun': 6,
+            'Jul': 7,
+            'Aug': 8,
+            'Sep': 9, 
+            'Oct': 10,
+            'Nov': 11,
+            'Dec': 12
+    }[shortMonth]
+
+date_6mth_ago_today = datetime.datetime(1995, 4, 11)
 
 #Checks for local file. If not found, it downloads it
 try:
@@ -14,5 +35,37 @@ else:
 count = 0
 for line in open("local_copy.log"):
     count += 1
+print()
+print("From 24/Oct/1994 until 11/Oct/1995 (the time period represented by the log),", count ,"number of request were made")
+print()
 
-print("From 24/Oct/1994 until 11/Oct/1995 (the time period represented by the log), ", count ,"number of request were made")
+#Request made in the last 6 months - apr 11 1995 to present
+within_6mths = 0
+for line in open("local_copy.log"):
+    split_string = line.split()
+    if len(split_string) > 8:
+        try:
+            #for item in split_string:
+                #print(item)
+            #print(split_string[6:9])
+            
+
+            temp_string = split_string[3]
+            #print(temp_string[4:7])
+            temp_month_num = monthToNum(temp_string[4:7])
+            #print(temp_month_num)
+
+            #converted to ints becasue of random errors
+            date_year = int(temp_string[8:12])
+            date_month = int(temp_month_num)
+            date_day = int(temp_string[1:3])
+            date_check = datetime.datetime(date_year, date_month, date_day)
+            if date_check<= date_6mth_ago_today:
+                within_6mths += 1
+        except:
+            print(line)
+
+print (within_6mths)
+            
+
+    
