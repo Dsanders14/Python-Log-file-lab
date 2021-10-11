@@ -60,7 +60,22 @@ requested_files = {}
 print("Please wait...")
 print("")
 print("")
+print("Part 1:")
 
+week_old_number = 0
+week_new_number = 0
+week_request_count = 0
+week_print_list = []
+
+month_old_number = 0
+month_new_number = 0
+month_request_count = 0
+month_print_list = []
+
+log_month_list = []
+
+onetime = 0
+onetime_month = 10
 
 for line in open("local_copy.log"):
     parts = regex.split(line)
@@ -89,6 +104,47 @@ for line in open("local_copy.log"):
             Saturday += 1
         elif day_Number == 6:
             Sunday += 1
+
+        #PT.2 Week by Week
+        #get the first date one time
+        if onetime == 0:
+            week_old_number = datetime.date(date_year, date_month, date_day).isocalendar()[1]
+            onetime = 1
+
+        week_new_number = datetime.date(date_year, date_month, date_day).isocalendar()[1]
+        if week_old_number == week_new_number:
+            week_request_count +=1
+        else:
+            tempstring3 = "Week "+ str(week_old_number) + " of " +  str(date_year) + " contained " + str(week_request_count) + " requests"
+            week_print_list.append(tempstring3)
+            week_request_count = 0
+            week_old_number = week_new_number
+
+
+        #PT.3 Month by Month
+        #get the first date one time
+        if onetime == 0:
+            month_old_number = date_month
+            onetime = 1
+
+        month_new_number = date_month
+        if month_old_number == month_new_number:
+            month_request_count +=1
+            log_month_list.append(line)
+        elif month_old_number == 0:
+            month_old_number = month_new_number
+        else:
+            tempstring2 = "Month " + str(month_old_number) + " of " + str(date_year) + " contained " + str(month_request_count) + " requests"
+            month_print_list.append(tempstring2)
+            month_request_count = 0
+            month_old_number = month_new_number
+            filename = "%(2)s_Month_%(1)s_log.txt" % {"1" :date_month, "2": date_year}
+            filehandle = open(filename, 'w')
+            for listitem in log_month_list:
+                filehandle.write(f"{listitem}\n")
+
+
+
 
         #PT.3 Request not successful
         if parts[7].startswith('4'):
@@ -130,6 +186,10 @@ shortened = tempstring[:templength-1]
 not_successful_percent = not_successful/count
 elsewhere_count_percent = elsewhere_count/count
 
+print("")
+print("")
+print("Part 1:")
+
 print("Files printed for each day of the week:")
 print("Monday:",Monday)
 print("Tuesday:", Tuesday)
@@ -139,15 +199,39 @@ print("Friday:", Friday)
 print("Saturday:", Saturday)
 print("Sunday:",Sunday)
 print("")
+
+print("")
+print("")
+print("Part 2:")
+for item in week_print_list:
+    print(item)
+print("")
+print("")
+print("")
+for item in month_print_list:
+    print(item)
+print("")
+print("")
+print("Part 3 & 4:")
+
 print(not_successful, "request or %.2f percent" % not_successful_percent, "were not successful")
 print(elsewhere_count, "request or %.2f percent" % elsewhere_count_percent, "were redirected elsewhere")
 print("")
 #PT.5
+print("")
+print("Part 5:")
 print("The most requested file was", parts2[1] ,"and was requested", shortened , "times")
 #PT.6
-print("There were", least_requested, "files that were requested only one time")
+print("")
+print("Part 6:")
+print("There were", least_requested, "files that were requested only one time making them tied for the least requested file")
+print("(not printing the names of each file to keep the print looking clean)")
 print("")
 print("")
+print("The log has been broken up my months and added to your local files")
+print("")
+print("")
+
 
 
 
