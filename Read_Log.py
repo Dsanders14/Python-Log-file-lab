@@ -35,12 +35,14 @@ except FileNotFoundError:
 else:
     print("File exist")
 
+#Split for logfile lines
 regex = re.compile("\[(\d{2})/([A-Za-z]{3,4})/(\d{4}):(\d{2}:\d{2}:\d{2}).+\] \"([A-Z]{3,6}) (.+) HTTP/1.0\" (\d{3}) .*")
 
+#opens log file
 file = open("local_copy.log")
 content = file.readlines()
 
-#parts = regex.split(content[10])
+#vars declared
 Monday = 0
 Tuesday = 0
 Wednesday = 0
@@ -57,11 +59,6 @@ elsewhere_count_percent = 0
 
 requested_files = {}
 
-print("Please wait...")
-print("")
-print("")
-print("Part 1:")
-
 week_old_number = 0
 week_new_number = 0
 week_request_count = 0
@@ -77,18 +74,27 @@ log_month_list = []
 onetime = 0
 onetime_month = 10
 
+
+print("Please wait...")
+print("")
+print("")
+print("Part 1:")
+
+#loops through each line
 for line in open("local_copy.log"):
     parts = regex.split(line)
     
+    #checks to ensure the line isnt an extranious line
     if len(parts) > 8:
         #Total count
         count += 1
-        #checking date
+        #PT. 1: checking date
         temp_month_num = monthToNum(parts[2])
         date_year = int(parts[3])
         date_month = int(temp_month_num)
         date_day = int(parts[1])
         date_complete = datetime.datetime(date_year, date_month, date_day)
+        #grabbing day of the week number to check for date
         day_Number = date_complete.weekday()
         if day_Number == 0:
             Monday += 1
@@ -111,9 +117,11 @@ for line in open("local_copy.log"):
             week_old_number = datetime.date(date_year, date_month, date_day).isocalendar()[1]
             onetime = 1
 
+        #if same, still the same week
         week_new_number = datetime.date(date_year, date_month, date_day).isocalendar()[1]
         if week_old_number == week_new_number:
             week_request_count +=1
+        #if different, week has changed
         else:
             tempstring3 = "Week "+ str(week_old_number) + " of " +  str(date_year) + " contained " + str(week_request_count) + " requests"
             week_print_list.append(tempstring3)
@@ -121,7 +129,7 @@ for line in open("local_copy.log"):
             week_old_number = week_new_number
 
 
-        #PT.3 Month by Month
+        #PT.3 Month by Month (set up the same as week above)
         #get the first date one time
         if onetime == 0:
             month_old_number = date_month
@@ -138,6 +146,7 @@ for line in open("local_copy.log"):
             month_print_list.append(tempstring2)
             month_request_count = 0
             month_old_number = month_new_number
+            #SPLITTING MY MONTH AND ADDING TO A NEW FILE
             filename = "%(2)s_Month_%(1)s_log.txt" % {"1" :date_month, "2": date_year}
             filehandle = open(filename, 'w')
             for listitem in log_month_list:
@@ -146,13 +155,14 @@ for line in open("local_copy.log"):
 
 
 
-        #PT.3 Request not successful
+        #PT.3 & 4 Request not successful or from elsewhere
         if parts[7].startswith('4'):
             not_successful += 1
         elif parts[7].startswith('3'):
             elsewhere_count += 1
 
-        #PT. 5
+        #PT. 5: checking the number of times each file is called
+        #if it exist, we add one, if not we set the file to 1 in a dict
         if parts[6] in requested_files:
             requested_files[parts[6]] += 1
         else:
@@ -186,8 +196,10 @@ shortened = tempstring[:templength-1]
 not_successful_percent = not_successful/count
 elsewhere_count_percent = elsewhere_count/count
 
+#printing all information
 print("")
 print("")
+#PT. 1
 print("Part 1:")
 
 print("Files printed for each day of the week:")
@@ -202,6 +214,7 @@ print("")
 
 print("")
 print("")
+#PT. 2
 print("Part 2:")
 for item in week_print_list:
     print(item)
@@ -212,6 +225,7 @@ for item in month_print_list:
     print(item)
 print("")
 print("")
+#PT. 3 & 4
 print("Part 3 & 4:")
 
 print(not_successful, "request or %.2f percent" % not_successful_percent, "were not successful")
@@ -228,9 +242,10 @@ print("There were", least_requested, "files that were requested only one time ma
 print("(not printing the names of each file to keep the print looking clean)")
 print("")
 print("")
+#Extra part
 print("The log has been broken up my months and added to your local files")
 print("")
-print("")
+print("") 
 
 
 
