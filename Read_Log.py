@@ -78,7 +78,7 @@ onetime_month = 10
 print("Please wait...")
 print("")
 print("")
-print("Part 1:")
+
 
 #loops through each line
 for line in open("local_copy.log"):
